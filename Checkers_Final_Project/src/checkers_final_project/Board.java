@@ -7,7 +7,7 @@ import java.util.Scanner;
 public class Board {
     Scanner in = new Scanner(System.in);
     private final Pieces[][] pieces = new Pieces[8][8];
-    private boolean isValid=false;
+    private boolean isValid = false;
     private int totRedPieces = 16,
                 totBlackPieces = 16;
     
@@ -47,42 +47,39 @@ public class Board {
         while(totRedPieces != 0 || totBlackPieces != 0){
             printOutBoard();
             
-            while(!isValid)
-            {
-               //Player 1 input
-            System.out.println("Player 1, it is your turn!");
-            System.out.println("What is the row and col. of the piece you want to move? Please type in the row first, hit enter, and then the col.");
-            current_x = in.nextInt() - one;
-            current_y = in.nextInt() - one;
+            while(!isValid){
+                //Player 1 input
+                System.out.println("Player 1, it is your turn!");
+                System.out.println("What is the row and col. of the piece you want to move? Please type in the row first, hit enter, and then the col.");
+                current_x = in.nextInt() - one;
+                current_y = in.nextInt() - one;
+
+                System.out.println("Where would you like to move that piece? Please type in the row first, hit enter, and then the col.");
+                next_x = in.nextInt() - one;
+                next_y = in.nextInt() - one;
+                //Moves piece if it is a valid move
+                movePiece(current_x, current_y, next_x, next_y); 
+            }isValid=false;
             
-            System.out.println("Where would you like to move that piece? Please type in the row first, hit enter, and then the col.");
-            next_x = in.nextInt() - one;
-            next_y = in.nextInt() - one;
-            
-            //Moves piece if it is a valid move
-            movePiece(current_x, current_y, next_x, next_y); 
-            }
-            isValid=false;
             printOutBoard();
             
-            while(!isValid)
-            { 
-            //Player 2 input
-            System.out.println("Player 2, it is your turn!");
-            System.out.println("What is the row and col. of the piece you want to move? Please type in the row first, hit enter, and then the col.");
-            current_x = in.nextInt() - one;
-            current_y = in.nextInt() - one;
+            while(!isValid){ 
+                //Player 2 input
+                System.out.println("Player 2, it is your turn!");
+                System.out.println("What is the row and col. of the piece you want to move? Please type in the row first, hit enter, and then the col.");
+                current_x = in.nextInt() - one;
+                current_y = in.nextInt() - one;
+
+                System.out.println("Where would you like to move that piece? Please type in the row first, hit enter, and then the col.");
+                next_x = in.nextInt() - one;
+                next_y = in.nextInt() - one;
+
+                //Moves piece if it is a valid move
+                movePiece(current_x, current_y, next_x, next_y);
+            }isValid=false;
             
-            System.out.println("Where would you like to move that piece? Please type in the row first, hit enter, and then the col.");
-            next_x = in.nextInt() - one;
-            next_y = in.nextInt() - one;
-            
-            //Moves piece if it is a valid move
-            movePiece(current_x, current_y, next_x, next_y);
-            }
-            isValid=false;
-        }
-    }
+        } //End of Game Loop     
+    } //End of playGame
     
     
     //--------------------------------------------------------------------------
@@ -170,7 +167,7 @@ public class Board {
     private Boolean validMove(int current_x, int current_y, int next_x, int next_y){
 
         //Checks if the x position of the move is 1 spot to the right or left
-        if(current_x - next_x == -1 || current_x - next_x == 1){
+        if(current_x - next_x == -1 || current_x - next_x == 1 && current_x - 1 > 0 && current_x + 1 < 9){
             
             //First checks if the piece to be moved is a red piece
             //Then checks if the y position of the move is 1 spot down, for red
@@ -214,8 +211,8 @@ public class Board {
     private Boolean validJump(int current_x, int current_y, int next_x, int next_y){
         
         //Checks if the x position of the jump is 2 spots to the right or left
-        if(current_x - next_x == -2 || current_x - next_x == 2){
-            
+        if((current_x - next_x == -2 || current_x - next_x == 2) && current_x - 2 > 0 && current_x + 2 < 9){
+
             //First checks if the piece to be moved is a red piece
             //Then checks if the piece to be jumped, left diagonal, is an opponents piece
             //Lastly checks to see if the position to be moved to is occupied
@@ -263,7 +260,7 @@ public class Board {
             //Otherwise returns false, the Y position is not 2 spots up/down or 
             //a piece currently occupies the spot
             else
-                return false;
+                return false;    
         }
         
         //Otherwise returns false, the X position is not 2 spots up/down or 
