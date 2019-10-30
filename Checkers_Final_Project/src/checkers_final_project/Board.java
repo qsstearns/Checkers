@@ -7,6 +7,7 @@ import java.util.Scanner;
 public class Board {
     Scanner in = new Scanner(System.in);
     private final Pieces[][] pieces = new Pieces[8][8];
+    private boolean isValid=false;
     private int totRedPieces = 16,
                 totBlackPieces = 16;
     
@@ -46,7 +47,9 @@ public class Board {
         while(totRedPieces != 0 || totBlackPieces != 0){
             printOutBoard();
             
-            //Player 1 input
+            while(!isValid)
+            {
+               //Player 1 input
             System.out.println("Player 1, it is your turn!");
             System.out.println("What is the row and col. of the piece you want to move? Please type in the row first, hit enter, and then the col.");
             current_x = in.nextInt() - one;
@@ -57,9 +60,13 @@ public class Board {
             next_y = in.nextInt() - one;
             
             //Moves piece if it is a valid move
-            movePiece(current_x, current_y, next_x, next_y);
+            movePiece(current_x, current_y, next_x, next_y); 
+            }
+            isValid=false;
             printOutBoard();
             
+            while(!isValid)
+            { 
             //Player 2 input
             System.out.println("Player 2, it is your turn!");
             System.out.println("What is the row and col. of the piece you want to move? Please type in the row first, hit enter, and then the col.");
@@ -72,6 +79,8 @@ public class Board {
             
             //Moves piece if it is a valid move
             movePiece(current_x, current_y, next_x, next_y);
+            }
+            isValid=false;
         }
     }
     
@@ -120,6 +129,7 @@ public class Board {
                 && (validMove(current_x, current_y, next_x, next_y) || validJump(current_x, current_y, next_x, next_y))){
             pieces[next_x][next_y].updatePiece(1);
             pieces[current_x][current_y].updatePiece(3);
+            isValid=true;
         }
         
         //First checks for the color of the piece(Black),
@@ -128,6 +138,7 @@ public class Board {
                 && (validMove(current_x, current_y, next_x, next_y) || validJump(current_x, current_y, next_x, next_y))){
             pieces[next_x][next_y].updatePiece(2);
             pieces[current_x][current_y].updatePiece(3);
+            isValid=true;
         }
         
         //A blank space was selected to be moved
