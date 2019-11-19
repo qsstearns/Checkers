@@ -10,22 +10,8 @@ package checkers_final_project;
  * @author Quintin Stearns
  */
 public class Pieces {
-    String piece;
-    
-    public void initializePiece(int tPiece){
-        
-        switch(tPiece){
-            case 1: piece = "R";
-                break;
-            
-            case 2: piece = "B";
-                break;
-               
-            case 3: piece = " ";
-                break;
-        }
-    }
-    
+    String piece;   
+    Boolean isKing = false;
     
     public void updatePiece(int tPiece){
         switch(tPiece){
@@ -41,7 +27,26 @@ public class Pieces {
     }
     
     
-    public String getPiece(){
-        return piece;
+    public void updateKing(int tKing){
+        switch(tKing){
+            case 1: piece = "KR";
+                    isKing = true;
+                break;
+                
+            case 2: piece = "KB";
+                    isKing = true;
+                break;
+        }
     }
+    
+    
+    public Boolean getKing(){
+        return isKing;
+    }
+    
+    
+    public String getPiece(){
+            return piece;
+    }
+    
 }

@@ -4,7 +4,6 @@
  * and open the template in the editor.
  */
 package checkers_final_project;
-
 /**
  *
  * @author Quintin Stearns
@@ -17,7 +16,7 @@ public class Checkers_Final_Project {
     public static void main(String[] args) {
         // TODO code application logic here
         Board game = new Board();
-        
+
         game.playGame();
     }
     

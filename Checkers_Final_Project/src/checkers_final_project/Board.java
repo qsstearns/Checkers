@@ -22,15 +22,16 @@ public class Board {
             for(int c = 0; c < 8; c++){
                 pieces[r][c] = new Pieces();
                 if(r < 2)
-                    pieces[r][c].initializePiece(1); // Red Piece Initialization
+                    pieces[r][c].updatePiece(1); // Red Piece Initialization
                 else if(r > 5) 
-                    pieces[r][c].initializePiece(2); // Black Piece Initialization
+                    pieces[r][c].updatePiece(2); // Black Piece Initialization
                 else 
-                    pieces[r][c].initializePiece(3); // Blank Spot Initialization
+                    pieces[r][c].updatePiece(3); // Blank Spot Initialization
             } //End of Col. Loop
         } //End of Row Loop
         
     } //End of Board Constructor
+    
     
     //--------------------------------------------------------------------------
     //playGame prints out the board and also prompts players to move pieces,
@@ -44,6 +45,8 @@ public class Board {
                 next_y,
                 one = 1;
         
+        System.out.println("Player 1 you are the R pieces, Player 2 you are the B pieces\n");
+        
         while(totRedPieces != 0 || totBlackPieces != 0){
             printOutBoard();
             
@@ -53,13 +56,23 @@ public class Board {
                 System.out.println("What is the row and col. of the piece you want to move? Please type in the row first, hit enter, and then the col.");
                 current_x = in.nextInt() - one;
                 current_y = in.nextInt() - one;
-
+                
                 System.out.println("Where would you like to move that piece? Please type in the row first, hit enter, and then the col.");
                 next_x = in.nextInt() - one;
                 next_y = in.nextInt() - one;
-                //Moves piece if it is a valid move
-                movePiece(current_x, current_y, next_x, next_y); 
-            }isValid=false;
+                
+                
+                
+                //Checks to make sure the piece you have selected is a R piece
+                if(pieces[current_x][current_y].getPiece().equals("R")){
+                //Moves piece if it is a valid move and then checks for king replacement
+                    if(!pieces[current_x][current_y].getKing())
+                        movePiece(current_x, current_y, next_x, next_y);
+                    else
+                        moveKing(current_x, current_y, next_x, next_y);
+                }
+                checkKing();
+            }isValid=false; //End of isValid while loop
             
             printOutBoard();
             
@@ -74,9 +87,16 @@ public class Board {
                 next_x = in.nextInt() - one;
                 next_y = in.nextInt() - one;
 
-                //Moves piece if it is a valid move
-                movePiece(current_x, current_y, next_x, next_y);
-            }isValid=false;
+                ///Checks to make sure the piece you have selected is a B piece
+                if(pieces[current_x][current_y].getPiece().equals("B")){
+                //Moves piece if it is a valid move and then checks for king replacement
+                    if(!pieces[current_x][current_y].getKing())
+                        movePiece(current_x, current_y, next_x, next_y);
+                    else
+                        moveKing(current_x, current_y, next_x, next_y);
+                }
+                checkKing();
+            }isValid=false; //End of isValid while loop
             
         } //End of Game Loop     
     } //End of playGame
@@ -95,11 +115,11 @@ public class Board {
                 System.out.print("|");
                 
                 //Prints out red pieces
-                if(pieces[r][c].getPiece().equals("R"))
+                if(pieces[r][c].getPiece().equals("R") || pieces[r][c].getPiece().equals("KR"))
                     System.out.print(" " + pieces[r][c].getPiece() + " ");
                 
                 //Prints out black pieces
-                if(pieces[r][c].getPiece().equals("B"))
+                if(pieces[r][c].getPiece().equals("B") || pieces[r][c].getPiece().equals("KB"))
                     System.out.print(" " + pieces[r][c].getPiece() + " ");
                 
                 //Prints out blank spaces
@@ -155,6 +175,49 @@ public class Board {
             System.out.println("There is a piece occupying that position!\n");   
     } //End of movePiece
     
+    
+    //--------------------------------------------------------------------------
+    //moveKing takes in 4 ints, 2 being the piece desired to be moved x and y,
+    //and also 2 ints which specify, x and y, where the piece is trying to be
+    //moved to, this is only used if a piece is a King piece
+    //--------------------------------------------------------------------------
+    private void moveKing(int current_x, int current_y, int next_x, int next_y){
+        
+        //First checks for the color of the piece(Red),
+        //Then checks if it is a valid move or a valid jump
+        if(pieces[current_x][current_y].getPiece().equals("KR")
+                && (validMove(current_x, current_y, next_x, next_y) || validJump(current_x, current_y, next_x, next_y))){
+            pieces[next_x][next_y].updateKing(1);
+            pieces[current_x][current_y].updatePiece(3);
+            isValid=true;
+        }
+        
+        //First checks for the color of the piece(Black),
+        //Then checks if it is a valid move or a valid jump
+        else if(pieces[current_x][current_y].getPiece().equals("B")
+                && (validMove(current_x, current_y, next_x, next_y) || validJump(current_x, current_y, next_x, next_y))){
+            pieces[next_x][next_y].updateKing(2);
+            pieces[current_x][current_y].updatePiece(3);
+            isValid=true;
+        }
+        
+        //A blank space was selected to be moved
+        else if(pieces[current_x][current_y].getPiece().equals(" "))
+            System.out.println("There is not a piece there to be moved.\n");
+        
+        //An invalid move was made, not diagonal
+        else if(!validMove(current_x, current_y, next_x, next_y))
+            System.out.println("Moves must be made diagonally and one spot away.\n");
+        
+        //An invalid jump was made
+        else if(!validJump(current_x, current_y, next_x, next_y))
+            System.out.println("An invalid jump was made.\n");
+        
+        //A piece was in a space to be moved to
+        else if(occupiedSpace(next_x, next_y))
+            System.out.println("There is a piece occupying that position!\n"); 
+    }
+    
 
     //--------------------------------------------------------------------------
     //movePiece takes in 4 ints, 2 being the piece desired to be moved x and y,
@@ -182,6 +245,11 @@ public class Board {
             //Lastly checks to see if the position to be moved to is occupied
             else if(pieces[current_x][current_y].getPiece().equals("B") 
                     && (current_y - next_y == -1 || current_y - next_y == 1) 
+                    && !occupiedSpace(next_x, next_y))
+                return true;
+            
+            else if(pieces[current_x][current_y].getKing()
+                    && (current_y - next_y == -1 || current_y - next_y == 1 || current_y - next_y == -1 || current_y - next_y == 1)
                     && !occupiedSpace(next_x, next_y))
                 return true;
             
@@ -247,7 +315,7 @@ public class Board {
             }
             
             //First checks if the piece to be moved is a black piece
-            //Then checks if the piece to be jumped, left diagonal, is an opponents piece
+            //Then checks if the piece to be jumped, right diagonal, is an opponents piece
             //Lastly checks to see if the position to be moved to is occupied
             else if(pieces[current_x][current_y].getPiece().equals("B")
                     && (pieces[current_x + 1][current_y - 1].getPiece().equals("R"))
@@ -287,5 +355,26 @@ public class Board {
         else
             return true;
     } //End of occupiedSpace
+    
+    
+    //--------------------------------------------------------------------------
+    //checkKing checks all valid spaces that could change a regular piece to a king, 
+    //a red piece has to occupy any space in [7][0-7] to be turned into a king,
+    //a black piece has to occupy any space in [0][0-7] to be turned into a king.
+    //--------------------------------------------------------------------------
+    private void checkKing(){
+        
+        //checks all columns [0-7]
+        for(int c = 0; c < 8; c++){
+            
+            //Checks [0][c] for any black piece, and updates the piece if there is one
+            if(pieces[0][c].getPiece().equals("B"))
+                pieces[0][c].updateKing(2);
+            
+            //Checks [7][c] for any red piece, and updates the piece if there is one
+            else if(pieces[7][c].getPiece().equals("R"))
+                pieces[7][c].updateKing(1);
+        } //End of col. for loop 
+    } //End of checkKing
     
 } //End of Board Class
