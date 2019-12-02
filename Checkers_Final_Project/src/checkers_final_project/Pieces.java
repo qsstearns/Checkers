@@ -40,6 +40,11 @@ public class Pieces {
     }
     
     
+    public void updateMove(int tMove){
+        piece = Integer.toString(tMove);
+    }
+    
+    
     public Boolean getKing(){
         return isKing;
     }
